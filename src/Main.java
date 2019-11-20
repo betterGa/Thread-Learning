@@ -1,13 +1,19 @@
-import java.util.HashSet;
+import java.util.*;
+import java.lang.Thread;
 
 public class Main
 {
     public static void main(String[] args) {
-       String s1="通话";
-       String s2="重地";
-        HashSet
-System.out.println(s1.hashCode());
-System.out.println(s2.hashCode());
-System.out.println(s1.equals(s2));
-    }
-}
+Vector<String> v=new Vector<>();
+v.add("hello");
+v.add("hello");
+v.add("B");
+v.add("bit");
+Enumeration<String> enumeration=v.elements();
+while (enumeration.hasMoreElements())
+{System.out.println(enumeration.nextElement());}
+
+
+
+
+    }}
