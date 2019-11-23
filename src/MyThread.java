@@ -210,6 +210,7 @@ public class MyThread implements Runnable
 //但是sleep方法不会释放锁🔒。
 //如果当前线程持有某个对象的锁🔒，它sleep了，其他线程仍无法访问这个对象。
 
+/*
 public class MyThread implements Runnable
 {
 
@@ -223,19 +224,20 @@ public class MyThread implements Runnable
 
     @Override
     public void run() {
-        for(int i=0;i<10;i++)
+        for(int i=0;i<5;i++)
         {try
-        {Thread.sleep(5000);}
+        {System.out.println("当前线程："+Thread.currentThread().getName()+",i="+i);
+            Thread.sleep(5000);}
         catch (InterruptedException e)
         {
             e.printStackTrace();
 
         }
-        System.out.println("当前线程："+Thread.currentThread().getName()+" ,i="+i);
+        System.out.println("我是sleep以后的那个线程："+Thread.currentThread().getName()+" ,i="+i);
         }
     }
 }
-
+*/
 //运行结果：即使调大sleep时间，也总是三个三个输出。
 //比如Thread-0先运行，调run()方法，先要休眠1s
 //这时线程交出CPU,比如CPU让Thread-2运行，
@@ -247,3 +249,29 @@ public class MyThread implements Runnable
 // 而其他线程一调用run(),也是交出CPU，立刻休眠
 //感觉像是同时休眠
 // 但其实是并发执行的。
+
+//观察yield()方法：线程让步
+public class MyThread implements Runnable
+{
+    @Override
+    public void run() {
+        for(int i=0;i<3;i++)
+        {
+            //线程让步，会让当前线程交出CPU权限，让CPU去执行其他线程，同样不释放锁🔒。
+            //只能让具有相同优先级的线程具有获取CPU执行时间的机会。
+            System.out.println();
+            System.out.println("yield之前"+Thread.currentThread().getName()+", i="+i);
+            Thread.yield();
+            System.out.println();
+        System.out.println("yield之后"+Thread.currentThread().getName()+", i="+i);
+        }
+    }
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        new Thread(myThread).start();
+        new Thread(myThread).start();
+        new Thread(myThread).start();
+    }
+
+}
