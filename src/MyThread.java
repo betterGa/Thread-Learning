@@ -134,13 +134,13 @@ private int ticket=10;
 }
 */
 
-//版本四：Callable接口实现多线程的启动
+//Callable接口的使用
 //有些线程需要返回结果，Callable接口中有方法
 //public V call(){}   实现这个接口需要实现这个方法
 //FutureTask类实现了RunnableFuture,RunnableFuture接口继承了Future接口，在Future接口中有get()方法。
 // FutureTask类有实现这个get()方法，直接使用即可
 //FutureTask类的构造方法参数可传入Callable接口类型的
-
+/*
 public class MyThread implements Callable<String>
 {
 
@@ -157,11 +157,93 @@ public class MyThread implements Callable<String>
         FutureTask futureTask=new FutureTask(myThread);
 Thread thread=new Thread(futureTask);
 Thread thread1=new Thread(futureTask);
-thread.start();                                                           
+thread.start();
 thread1.start();
        System.out.println(futureTask.get());
     }
-
-
-
 }
+*/
+
+/*
+public class MyThread implements Runnable
+{
+    @Override
+    public void run() {
+        for(int i=0;i<10;i++)
+        {System.out.println("当前线程"+Thread.currentThread().getName()+",  i="+i);
+        }
+    }
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        new Thread(myThread).start();
+        new Thread(myThread).start();
+        new Thread(myThread,"xiaojia").start();
+    }
+}
+*/
+
+/*
+public class MyThread implements Runnable
+{
+
+
+    @Override
+    public void run() {
+        System.out.println("当前线程"+Thread.currentThread().getName());
+    }
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        myThread.run();//通过对象调用run方法。
+        new Thread(myThread).start();
+
+    }
+}
+*/
+
+//处理休眠操作  sleep()
+
+//线程休眠：让线程暂缓执行一下，等到了预计时间继续执行。
+//线程休眠会交出CPU,让CPU去执行其他任务   (不会被分配CPU执行时间)
+//不过无须等待其他线程显式唤醒（notify,notifyAll） 一定时间后会自动被系统唤醒
+//但是sleep方法不会释放锁🔒。
+//如果当前线程持有某个对象的锁🔒，它sleep了，其他线程仍无法访问这个对象。
+
+public class MyThread implements Runnable
+{
+
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        new Thread(myThread).start();
+        new Thread(myThread).start();
+        new Thread(myThread).start();
+    }
+
+    @Override
+    public void run() {
+        for(int i=0;i<10;i++)
+        {try
+        {Thread.sleep(5000);}
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+
+        }
+        System.out.println("当前线程："+Thread.currentThread().getName()+" ,i="+i);
+        }
+    }
+}
+
+//运行结果：即使调大sleep时间，也总是三个三个输出。
+//比如Thread-0先运行，调run()方法，先要休眠1s
+//这时线程交出CPU,比如CPU让Thread-2运行，
+//1s后，无需notify方法唤醒，系统会自动唤醒Thread-0，
+//这时Thread-0恢复执行，输出"......"
+//Thread的运行过程同理
+//虽然结果总是三个三个输出，像是同时休眠，只是因为当前线程调用run()时，就立刻进入休眠sleep(),把时间片给了CPU
+// 运行其他线程
+// 而其他线程一调用run(),也是交出CPU，立刻休眠
+//感觉像是同时休眠
+// 但其实是并发执行的。
