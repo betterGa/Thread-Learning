@@ -1,5 +1,8 @@
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
@@ -251,6 +254,7 @@ public class MyThread implements Runnable
 // 但其实是并发执行的。
 
 //观察yield()方法：线程让步
+/*
 public class MyThread implements Runnable
 {
     @Override
@@ -274,4 +278,151 @@ public class MyThread implements Runnable
         new Thread(myThread).start();
     }
 
+}
+*/
+
+//join方法的使用
+//join(millis)方法：等待线程死亡。
+//在A线程中调用B.join()表示A线程会先暂停运行，等待B线程运行完毕以后，才接着运行。
+//join()会调用join()方法表示永远等待，直到B死亡。
+//join(millis)表示线程A等待线程B运行millis毫秒，millis毫秒后，A、B并发执行。
+
+/*
+public class MyThread implements Runnable {
+
+
+    @Override
+    public void run() {
+        try {
+            System.out.println("主线" +
+                    "" +
+                    "程睡眠前的时间");
+            Test.printTime();
+            Thread.sleep(2000);
+            System.out.println(Thread.currentThread().getName()+Thread.currentThread().getState());
+            System.out.println("睡眠结束的时间");
+            Test.printTime();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }}
+    public static void main(String[] args) throws InterruptedException {
+        MyThread myThread=new MyThread();
+        Thread thread=new Thread(myThread,"子线程A");
+        thread.start();
+        System.out.println("主线程里的执行"+Thread.currentThread().getName());
+        thread.join();
+        System.out.println("代码结束"); }}
+    class Test
+    {
+        public static void printTime()
+        {
+            Date date=new Date();
+            DateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm;ss");
+            String time=dateFormat.format(date);
+            System.out.println(time);
+        }
+    }
+*/
+
+//线程停止
+//方法一：设置标志位使线程退出
+/*
+public class MyThread implements Runnable
+{
+   private boolean flag=true;
+    @Override
+    public void run() {
+        int i=1;
+        while (flag)
+        {
+            try
+            {Thread.sleep(1000);
+            System.out.println("第"+i+"次执行，线程名称为:"+Thread.currentThread().getName());
+            i++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }}
+
+public void setFlag(boolean flag)
+        {this.flag=flag;}
+
+    public static void main(String[] args) throws InterruptedException {
+        MyThread myThread=new MyThread();
+        Thread thread1=new Thread(myThread,"子线程A");
+        thread1.start();
+        Thread.sleep(2000);
+        myThread.setFlag(false);
+        System.out.println("代码结束");
+    }
+    }
+*/
+
+//方法二：使用stop方法使线程退出
+//不安全，已被弃用
+/*
+public class MyThread implements Runnable
+{
+    private boolean flag=true;
+    @Override
+    public void run() {
+        int i=1;
+        while (flag)
+        {
+            try
+            {Thread.sleep(1000);
+                System.out.println("第"+i+"次执行，线程名称为:"+Thread.currentThread().getName());
+                i++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }}
+
+    public void setFlag(boolean flag)
+    {this.flag=flag;}
+
+    public static void main(String[] args) throws InterruptedException {
+        MyThread myThread=new MyThread();
+        Thread thread1=new Thread(myThread,"子线程A");
+        thread1.start();
+        Thread.sleep(3000);
+        thread1.stop();
+        System.out.println("代码结束");
+    }
+}
+*/
+//方法三：使用Thread类的interrupted方法可以中断线程
+public class MyThread implements Runnable
+{
+    private boolean flag=true;
+    @Override
+    public void run() {
+    int i=1;
+    while (flag)
+    { try
+        { Thread.sleep(1000);
+            //判断是否被中断
+            boolean bool=Thread.currentThread().isInterrupted();
+            if(bool)
+            {System.out.println("非阻塞情况下执行该操作，线程状态"+bool);
+            break;}
+            System.out.println("第"+i+"次执行，线程名称为"+Thread.currentThread().getName());
+            i++;
+        } catch (InterruptedException e) {
+           System.out.println("退出阻塞状态了");
+                                  boolean bool=Thread.currentThread().isInterrupted();
+           System.out.println(bool);
+           return;
+        }
+    }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        MyThread myThread=new MyThread();
+        Thread thread1=new Thread(myThread,"子线程A");
+        thread1.start();
+        Thread.sleep(3000);
+        thread1.interrupt();
+        System.out.println("代码结束");
+    }
 }
