@@ -213,16 +213,25 @@ public class MyThread implements Runnable
 //但是sleep方法不会释放锁🔒。
 //如果当前线程持有某个对象的锁🔒，它sleep了，其他线程仍无法访问这个对象。
 
+
 /*
 public class MyThread implements Runnable
 {
-
+public void ah()
+{System.out.println("ah");}
 
     public static void main(String[] args) {
         MyThread myThread=new MyThread();
         new Thread(myThread).start();
         new Thread(myThread).start();
         new Thread(myThread).start();
+
+        System.out.println("我就是想看看是不是主线程先执行完才去的子线程");
+        System.out.println("俺也一样");
+        System.out.println("+1");
+        new MyThread().ah();
+
+
     }
 
     @Override
@@ -236,11 +245,13 @@ public class MyThread implements Runnable
             e.printStackTrace();
 
         }
-        System.out.println("我是sleep以后的那个线程："+Thread.currentThread().getName()+" ,i="+i);
+        System.out.println("我是sleep以后的那个线程："+Thread.currentThread().getName()+" ,i="+i+Thread.currentThread().getState());
         }
     }
 }
-*/
+
+
+
 //运行结果：即使调大sleep时间，也总是三个三个输出。
 //比如Thread-0先运行，调run()方法，先要休眠1s
 //这时线程交出CPU,比如CPU让Thread-2运行，
@@ -254,19 +265,21 @@ public class MyThread implements Runnable
 // 但其实是并发执行的。
 
 //观察yield()方法：线程让步
+
+
 /*
 public class MyThread implements Runnable
 {
     @Override
     public void run() {
-        for(int i=0;i<3;i++)
+        for(int i=0;i<100;i++)
         {
             //线程让步，会让当前线程交出CPU权限，让CPU去执行其他线程，同样不释放锁🔒。
             //只能让具有相同优先级的线程具有获取CPU执行时间的机会。
-            System.out.println();
+            //System.out.println();
             System.out.println("yield之前"+Thread.currentThread().getName()+", i="+i);
             Thread.yield();
-            System.out.println();
+            //System.out.println();
         System.out.println("yield之后"+Thread.currentThread().getName()+", i="+i);
         }
     }
@@ -279,8 +292,8 @@ public class MyThread implements Runnable
     }
 
 }
-*/
 
+*/
 //join方法的使用
 //join(millis)方法：等待线程死亡。
 //在A线程中调用B.join()表示A线程会先暂停运行，等待B线程运行完毕以后，才接着运行。
@@ -392,6 +405,7 @@ public class MyThread implements Runnable
 }
 */
 //方法三：使用Thread类的interrupted方法可以中断线程
+/*
 public class MyThread implements Runnable
 {
     private boolean flag=true;
@@ -426,3 +440,63 @@ public class MyThread implements Runnable
         System.out.println("代码结束");
     }
 }
+*/
+
+//设置优先级
+/*public class MyThread implements Runnable
+{ @Override
+    public void run() {
+    for(int i=0;i<5;i++)
+    {
+        System.out.println("当前线程"+Thread.currentThread().getName()+", i="+i);
+    }}
+    public static void main(String[] args) {
+        System.out.println("当前线程是"+Thread.currentThread().getName()+"优先级为"+Thread.currentThread().getPriority());
+        MyThread myThread=new MyThread();
+        Thread t1=new Thread(myThread,"1");
+        Thread t2=new Thread(myThread,"2");
+        Thread t3=new Thread(myThread,"3");
+        //1
+        t1.setPriority(Thread.MIN_PRIORITY);
+        //1
+        t2.setPriority(Thread.MIN_PRIORITY);
+        //10
+        t3.setPriority(Thread.MIN_PRIORITY);
+        t1.start();
+        t2.start();
+        t3.start();
+    }}
+    */
+
+//观察线程继承性
+//“默认情况下，一个线程继承它的父线程的优先级”
+class A implements Runnable {
+    public void run() {
+        System.out.println("A的优先级为: " + Thread.currentThread().getPriority());
+        Thread thread = new Thread(new B());
+        thread.start();
+    }
+}
+    class B implements Runnable
+    {
+        //B线程是在A中start的，因此B线程的优先级默认继承了A线程的优先级
+        @Override
+        public void run() {
+            System.out.println("B的优先级为"+Thread.currentThread().getPriority()); }
+    }
+
+    public class MyThread
+    {
+        public static void main(String[] args)
+        { Thread thread=new Thread(new A());
+            //10
+            thread.setPriority(Thread.MIN_PRIORITY);
+            thread.start();
+        }
+    }
+
+
+
+
+
+
