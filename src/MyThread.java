@@ -468,6 +468,7 @@ public class MyThread implements Runnable
     }}
     */
 
+/*
 //观察线程继承性
 //“默认情况下，一个线程继承它的父线程的优先级”
 class A implements Runnable {
@@ -494,9 +495,52 @@ class A implements Runnable {
             thread.start();
         }
     }
+*/
 
 
 
+//观察守护线程
 
+class A implements Runnable {
+    private int i;
+
+    @Override
+    public void run() {
+        try {
+            while (i<=20) {
+                i++;
+                System.out.println("线程名称" + Thread.currentThread().getName() + ", i=" + i +
+                        ", 是否守护线程" + Thread.currentThread().isDaemon()+"， 线程优先级为"+
+                        Thread.currentThread().getPriority());
+                Thread.sleep(1000);
+            }
+
+        } catch (InterruptedException e) {
+            System.out.println("线程名称" + Thread.currentThread().getName() + "中断线程了");
+        }
+    }
+}
+ public class MyThread
+ {
+     public static void main(String[] args) throws InterruptedException {
+         Thread thread1=new Thread(new A(),"子线程A");
+         //设置          线程A为守护线程,
+         //必须在start方法之前
+         thread1.setDaemon(true);
+         thread1.start();
+         Thread thread2=new Thread(new A(),"子线程B");
+         thread2.start();
+         Thread.sleep(3000);
+         //中断非守护线程
+         /*thread2.interrupt();*/
+
+         //中断守护线程,已验证。
+         thread1.interrupt();
+         Thread.sleep(10000);
+         System.out.println("主线程优先级为"+Thread.currentThread().getName()+" "+
+                 Thread.currentThread().getPriority());
+         System.out.println("代码结束");
+     }
+ }
 
 
