@@ -1,3 +1,5 @@
+import sun.security.krb5.internal.TGSRep;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -498,7 +500,7 @@ class A implements Runnable {
 */
 
 
-
+/*
 //观察守护线程
 
 class A implements Runnable {
@@ -507,11 +509,10 @@ class A implements Runnable {
     @Override
     public void run() {
         try {
-            while (i<=20) {
+            while (true) {
                 i++;
                 System.out.println("线程名称" + Thread.currentThread().getName() + ", i=" + i +
-                        ", 是否守护线程" + Thread.currentThread().isDaemon()+"， 线程优先级为"+
-                        Thread.currentThread().getPriority());
+                        ", 是否守护线程" + Thread.currentThread().isDaemon());
                 Thread.sleep(1000);
             }
 
@@ -532,15 +533,136 @@ class A implements Runnable {
          thread2.start();
          Thread.sleep(3000);
          //中断非守护线程
-         /*thread2.interrupt();*/
+         thread2.interrupt();
 
          //中断守护线程,已验证。
-         thread1.interrupt();
+         //thread1.interrupt();
          Thread.sleep(10000);
-         System.out.println("主线程优先级为"+Thread.currentThread().getName()+" "+
-                 Thread.currentThread().getPriority());
+         //System.out.println("主线程优先级为"+Thread.currentThread().getName()+" "+
+           //      Thread.currentThread().getPriority());
          System.out.println("代码结束");
      }
  }
+ */
 
+
+//观察多个线程同时卖票
+/*
+public class MyThread implements Runnable
+{
+    //一共有10张票
+    private int ticket=10;
+    @Override
+    public void run() {
+        //还有票
+ while (this.ticket>0)
+ {
+     try
+     {
+         Thread.sleep(5000);
+     } catch (InterruptedException e) {
+         e.printStackTrace();
+     }
+     System.out.println(Thread.currentThread().getName()+"还有"+this.ticket--+"张票");
+ }
+    }
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        new Thread(myThread,"黄牛A").start();
+        new Thread(myThread,"黄牛B").start();
+        new Thread(myThread,"黄牛C").start();
+    }
+}
+*/
+
+//同步处理
+//synchronized处理同步问题
+//synchronized有两种模式：同步代码块、同步方法
+
+//（1）使用同步代码块时，必须设定当前要锁定的对象，一般是this
+/*
+public class MyThread implements Runnable {
+    //一共10张票
+    private int ticket = 10;
+
+    @Override
+    public void run() {
+        for (int i = 0; i < 10; i++) {
+            //在同一时刻，只允许一个线程进入代码块处理
+            synchronized (this) {
+                //还有票
+                if (this.ticket > 0) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println(Thread.currentThread().getName() + ",还有" + this.ticket-- + "张票");
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+MyThread myThread=new MyThread();
+Thread thread1=new Thread(myThread,"线程A");
+Thread thread2=new Thread(myThread,"线程B");
+Thread thread3=new Thread(myThread,"线程C");
+
+thread1.setPriority(Thread.MIN_PRIORITY);
+thread3.setPriority(Thread.MAX_PRIORITY);
+thread2.setPriority(Thread.MAX_PRIORITY);
+thread1.start();
+thread2.start();
+thread3.start();
+    }
+}
+*/
+
+//同步方法
+public class MyThread implements Runnable
+{
+
+private int ticket=20;
+public void print()
+{System.out.println(this.ticket);}
+    @Override
+    public void run() {
+        for(int i=0;i<20;i++)
+        {
+            this.sale();
+            this.print();
+        }}
+
+        public synchronized void sale()
+        {
+            //还有票
+            if(this.ticket>0)
+            {
+                try{
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+System.out.println(Thread.currentThread().getName()+",还有"+ticket--+"张票");
+            }
+        }
+
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        Thread thread1=new Thread(myThread,"黄牛A");
+        Thread thread2=new Thread(myThread,"黄牛B");
+        Thread thread3=new Thread(myThread,"黄牛C");
+        thread1.setPriority(Thread.MIN_PRIORITY);
+        thread2.setPriority(Thread.MAX_PRIORITY);
+        thread3.setPriority(Thread.MAX_PRIORITY);
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        myThread.print();
+
+
+    }
+    }
 
