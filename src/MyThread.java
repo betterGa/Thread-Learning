@@ -620,6 +620,7 @@ thread3.start();
 }
 */
 
+/*
 //同步方法
 public class MyThread implements Runnable
 {
@@ -661,8 +662,54 @@ System.out.println(Thread.currentThread().getName()+",还有"+ticket--+"张票")
         thread2.start();
         thread3.start();
         myThread.print();
-
-
     }
     }
+*/
+
+
+
+//观察synchronized锁多对象
+class Sync
+{public synchronized void test()
+{
+    System.out.println("test方法开始，当前线程为" + Thread.currentThread().getName());
+
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    System.out.println("test方法结束，当前线程为" + Thread.currentThread().getName());
+}}
+
+public class MyThread extends Thread
+{
+    public void run()
+{
+    Sync sync=new Sync();
+    sync.test();
+}
+    public static void main(String[] args) {
+        for(int i=0;i<3;i++)
+        {
+            Thread thread=new MyThread();
+            thread.start();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
