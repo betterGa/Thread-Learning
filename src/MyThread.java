@@ -666,7 +666,7 @@ System.out.println(Thread.currentThread().getName()+",还有"+ticket--+"张票")
     }
 */
 
-
+/**
 
 //观察synchronized锁多对象
 class Sync
@@ -697,13 +697,90 @@ public class MyThread extends Thread
         }
     }
 }
+*/
+
+//用synchronized锁住一个对象后，别的线程如果也想拿到这个对象的锁，就必须等待这个线程执行完成，释放锁，
+//才能再次给对象加锁，才能达到线程同步的目的。
+//即使是两个不同的代码段，都要锁同一个对象。
+//那么这两个代码段也不能在多线程环境下同时运行。
+//（"JVM为每个对象和类都关联了锁🔒，代表任何时候只允许一个线程拥有的特权"）
+
+//现在想锁住一段代码
+//有两种思路
+//第一种:锁同一个对象
+/**
+ class Sync
+{
+    public void test() {
+        synchronized (this) {
+            System.out.println("test方法开始，当前线程为" + Thread.currentThread().getName());
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("test方法结束，当前线程为" + Thread.currentThread().getName());
+        }
+    }
+    }
+    public class MyThread extends Thread {
+        private Sync sync;
+
+        public MyThread(Sync sync) {
+            this.sync = sync;
+        }
+
+        @Override
+        public void run() {
+            this.sync.test();
+        }
 
 
+        public static void main(String[] args) {
+            Sync sync = new Sync();
+            for (int i = 0; i < 3; i++) {
+                Thread thread = new MyThread(sync);
+                thread.start();
+            }
+        }
+    }
+//应该是因为 sleep时不释放锁，别的线程不能访问该方法，sleep完了以后，也没别的线程正在进行
+//那就继续是这个线程咯，所以先"开始"，紧接着就是该线程的结束
+*/
 
+//第二种：全局锁。锁这个类对应的Class对象
+class Sync
+{
+    public void test()
+    {
+        synchronized (Sync.class)
+        {
+            System.out.println("test方法开始，当前线程为"+Thread.currentThread().getName());
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e)
+            {e.printStackTrace();}
+            System.out.println("test方法结束，当前线程为"+Thread.currentThread().getName());
+        }
+    }
+}
+public class MyThread extends Thread
+{
+    @Override
+    public void run()
+    {
+        Sync sync=new Sync();
+        sync.test();
+    }
 
-
-
-
+    public static void main(String[] args) {
+        for(int i=0;i<3;i++)
+        {Thread thread=new MyThread();
+        thread.start();}
+    }
+}
 
 
 
