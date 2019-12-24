@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
@@ -784,6 +786,7 @@ public class MyThread extends Thread
 }
 */
 
+/*
 //观察对象锁机制
 public class MyThread
 {
@@ -793,6 +796,8 @@ public class MyThread
         {System.out.println("hello world");}
     }
 }
+*/
+
 //用javap反编译得到的结果：
 /**
 "C:\Program Files\Java\jdk1.8.0_131\bin\javap.exe" -c MyThread
@@ -848,9 +853,91 @@ public class MyThread
     Process finished with exit code 0
 */
 
+//观察Synronized修饰的同步方法
+
+    /*
+public class MyThread
+{
+    public synchronized void foo()
+    {System.out.println("hello world");}
+
+    public static void main(String[] args) {
+        new MyThread().foo();
+    }
+}
+
+
+    //使用javap反编译得到：
+/**
+ "C:\Program Files\Java\jdk1.8.0_131\bin\javap.exe" -c MyThread
+ Compiled from "MyThread.java"
+ public class MyThread {
+ public MyThread();
+ Code:
+ 0: aload_0
+ 1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+ 4: return
+
+
+
+ public synchronized void foo();
+ Code:
+ 0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
+ 3: ldc           #3                  // String hello world
+ 5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+ 8: return
+
+ public static void main(java.lang.String[]);
+ Code:
+ 0: new           #5                  // class MyThread
+ 3: dup
+ 4: invokespecial #6                  // Method "<init>":()V
+ 7: invokevirtual #7                  // Method foo:()V
+ 10: return
+ }
+
+ Process finished with exit code 0
 
 
 
 
+ */
+
+//JDK1.5提供的Lock锁🔒
+public class MyThread implements Runnable
+{
+    private int ticket=500;
+    private Lock ticketLock=new ReentrantLock();
+    @Override
+    public void run()
+    {
+        for(int i=0;i<500;i++)
+        {
+            ticketLock.lock();
+            try {
+                if (ticket > 0) {
+                    try {
+                        Thread.sleep(20);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        System.out.println(Thread.currentThread().getName() + ",还有" + this.ticket-- + "张票");
+                    }}} finally {
+                        ticketLock.unlock();
+                    }
+                }
+            }
+    public static void main(String[] args) {
+        MyThread mt=new MyThread();
+        Thread t1=new Thread(mt,"黄牛1");
+        Thread t2=new Thread(mt,"黄牛2");
+        Thread t3=new Thread(mt,"黄牛3");
+        t1.setPriority(Thread.MIN_PRIORITY);
+        t2.setPriority(Thread.MAX_PRIORITY);
+        t3.setPriority(Thread.MAX_PRIORITY);
+    t1.start();
+    t2.start();
+    t3.start();
+    }
+}
 
 
