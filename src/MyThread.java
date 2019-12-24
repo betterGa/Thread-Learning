@@ -748,6 +748,7 @@ public class MyThread extends Thread
 //那就继续是这个线程咯，所以先"开始"，紧接着就是该线程的结束
 */
 
+/**
 //第二种：全局锁。锁这个类对应的Class对象
 class Sync
 {
@@ -781,8 +782,71 @@ public class MyThread extends Thread
         thread.start();}
     }
 }
+*/
+
+//观察对象锁机制
+public class MyThread
+{
+    private static Object object=new Object();
+    public static void main(String[] args) {
+        synchronized (object)
+        {System.out.println("hello world");}
+    }
+}
+//用javap反编译得到的结果：
+/**
+"C:\Program Files\Java\jdk1.8.0_131\bin\javap.exe" -c MyThread
+        Compiled from "MyThread.java"
 
 
+
+
+
+ public class MyThread {
+ public MyThread();
+ Code:
+ 0: aload_0
+ 1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+ 4: return
+
+
+
+
+
+ public static void main(java.lang.String[]);
+    Code:
+            0: getstatic     #2                  // Field object:Ljava/lang/Object;
+            3: dup
+       4: astore_1
+       5: monitorenter
+       6: getstatic     #3                  // Field java/lang/System.out:Ljava/io/PrintStream;
+            9: ldc           #4                  // String hello world
+            11: invokevirtual #5                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+            14: aload_1
+      15: monitorexit
+      16: goto          24
+              19: astore_2
+      20: aload_1
+      21: monitorexit
+      22: aload_2
+      23: athrow
+      24: return
+    Exception table:
+    from    to  target type
+           6    16    19   any
+          19    22    19   any
+
+    static {};
+    Code:
+            0: new           #6                  // class java/lang/Object
+            3: dup
+       4: invokespecial #1                  // Method java/lang/Object."<init>":()V
+            7: putstatic     #2                  // Field object:Ljava/lang/Object;
+            10: return
+}
+
+    Process finished with exit code 0
+*/
 
 
 
