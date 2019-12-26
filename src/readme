@@ -1,8 +1,32 @@
-JUC中提供了很多同步机制，会为我们处理所有的加锁🔒。
+1.JUC(java.util.cocurrent)中提供了很多同步机制，会为我们处理所有的加锁🔒。
+
 如：用阻塞队列来同步完成一个共同任务的线程。
 还可以研究一下并行流。
 
-如果synronized关键字适合你的程序，那么请尽量使用它。
+假设对共享变量除了赋值以外不完成其他操作，那么可以将这些共享变量声明为volatile.
+JUC包中有很多类使用了很高效的机器级指令（而不是使用锁🔒）来保证其他操作的原子性。
+如：AtomicInteger类提供了incrementAndGet和decrementAndGet方法，
+分别以原子方式将一个整数自增或自减，并返回自增、自减后的值，
+也就是说，获得值、增1并设置然后生成新值的操作不会中断。
+可以保证即使多线程并发地访问同一个实例，也会计算并返回正确的值。
+可以安全地生成一个数值序列。
+
+有很多方法可以以原子方式设置和增减值，不过，
+如果希望完成更复杂的更新，就必须使用compareToAndSet方法
+如：希望跟踪不同线程观察的最大值
+do
+{oldValue=largeSet.get();
+newValue=Math.max(oldValue,newValue);
+}
+while(!largest.comPareToAndSet(oldValue.newValue));
+因为如果另一个线程也在更新largest,就可能阻止这个线程更新。
+这样一来，compareToAndSet会返回false.而不会设置更新值。
+在这种情况下，循环会再次尝试，读取更新后的值，这听上去很麻烦，不过，
+compareToAndSet方法会映射到一个处理器操作，比使用锁速度更快。
+
+
+
+2.如果synronized关键字适合你的程序，那么请尽量使用它。
 这样可以减少编写的代码数量，减少出错的几率。
 
-如果特别需要Lock/Condition结构提供的独有特性时，才使用Lock/Condition
+3.如果特别需要Lock/Condition结构提供的独有特性时，才使用Lock/Condition
