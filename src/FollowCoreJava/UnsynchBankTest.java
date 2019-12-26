@@ -21,6 +21,7 @@ public static final int DELAY=10;
         Bank bank=new Bank(NACCOUNTS,INITIAL_BALANCE);
         for(int i=0;i<NACCOUNTS;i++)
         {int fromAccount=i;
+        //用Lambad表达式
         Runnable r=()->{
             try {
                 while (true)
