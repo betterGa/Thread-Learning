@@ -18,7 +18,3 @@ public class Test {
 //即在第一次append方法时进行加锁，最后一次append方法结束后进行解锁
 
 
-/**
- *
- */
-
