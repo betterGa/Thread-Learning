@@ -25,7 +25,7 @@ private static Object resourceB=new Object();
         });
 
 //创建线程B
-        Thread threadB=new Thread(new Runnable() {
+        /*Thread threadB=new Thread(new Runnable() {
             @Override
             public void run() {
                 synchronized (resourceB)
@@ -44,7 +44,7 @@ private static Object resourceB=new Object();
 threadA.start();
 threadB.start();
 }
-}
+}*/
 
 /**
  *运行结果为:
@@ -85,4 +85,47 @@ threadB.start();
  *   然后CPU仍归本子线程，获取到pen资源，输出“把你的笔给我”
  *   第二种情况是不存在死锁的。
  *   运行结果确实是两种情况都有可能出现。
+ */
+
+
+//修改线程B,保证资源申请的有序性，可以避免死锁。
+Thread threadB=new Thread(new Runnable() {
+    @Override
+    public void run() {
+        synchronized (resourceA)
+        {
+        System.out.println(Thread.currentThread()+"get resourceB");
+        try{
+        Thread.sleep(1000); }
+        catch (InterruptedException e)
+        {e.printStackTrace();}
+        System.out.println(Thread.currentThread()+"waiting get ResourceA");
+        synchronized (resourceB)
+        {System.out.println(Thread.currentThread()+"get resourceA");}
+        }
+        }
+});
+threadA.start();
+threadB.start();
+}}
+
+/**
+ * 改成这样的话，在线程B中获取资源的顺序和在线程A中获取资源的顺序保持一致。
+ * 资源分配有序性是指：假如线程A和线程B都需要资源1，2，3，...,n时，
+ * 对资源进行排序，线程A和B只有在获取了资源n-1时才能去获取资源n。
+ *
+ * 运行结果为：
+ * Thread[Pen,5,main]我有笔，我就不给你。
+ * Thread[Pen,5,main]把你的本子给我。
+ * Thread[Book,5,main]我有本子，我就不给你。
+ * Thread[Book,5,main]把你的笔给我。
+ * 线程A和线程B同时执行到了synchronized(resourceA)
+ * 只有一个线程可以获取到resourceA上的监视器锁，
+ * 假如线程A获取到了，那么线程B就会被阻塞，那么线程B也就不会去获取资源B（什么资源都获取不到的。）
+ * 线程A获取到资源A的监视器锁后，继续申请resourceB的监视器锁资源，
+ * 这时线程A是可以获取到的，线程A获取到resourceB的锁资源并使用它之后，
+ * 才会放弃对resourceB的持有，然后再释放对resourceA资源的持有，
+ * 释放resourceA后线程B才会从阻塞状态变为激活状态，
+ * 所以资源的有序性 破坏了 资源的请求并持有条件 和 环路等待 条件。
+ * 从而避免了死锁。
  */
