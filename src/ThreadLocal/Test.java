@@ -38,7 +38,4 @@ public class Test
     System.out.println(commStr);
     System.out.println(threadStr.get());
     }
-
-
-
 }
