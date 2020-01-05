@@ -39,3 +39,9 @@ public class Test
     System.out.println(threadStr.get());
     }
 }
+
+/**运行结果为：
+ * thrad
+ * main
+ *报告：我并没有理解这个运行结果。
+ */
