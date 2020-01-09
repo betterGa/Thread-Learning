@@ -1,5 +1,8 @@
 package ThreadLocal;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  *本例开启了两个线程，在每个线程内部都设置了本地变量的值，
  * 然后调用print函数打印当前本地变量的值，
@@ -11,6 +14,8 @@ public class ThreadLocalTest {
     static ThreadLocal<String> localVariable=new ThreadLocal<>();
 
     public static void main(String[] args) {
+
+
         //创建线程threadOne
         Thread threadOne=new Thread(new Runnable() {
             @Override
