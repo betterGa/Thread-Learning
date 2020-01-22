@@ -1,4 +1,4 @@
-package Lock_Learning;
+//package Lock_Learning;
 import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import org.junit.Test;
 
@@ -15,8 +15,9 @@ public class Mutex implements Lock {
 
     //模拟可重入锁ReentrantLock类中的
     // abstract static class Sync extends AbstractQueuedSynchronizer
+
+    //定义了一个继承AQS的静态内部类
     static class Sync extends AbstractQueuedSynchronizer {
-        @Override
         //tryAcquire方法：尝试以独占模式获取。
         // 该方法应该查询对象的状态是否允许以独占模式获取，如果是，则获取它。
         //该方法总是由执行获取的线程调用。 如果此方法报告失败，则获取方法可能将线程排队（如果尚未排队），直到被其他线程释放为止。 这可以用于实现方法Lock.tryLock() 。
@@ -34,6 +35,8 @@ public class Mutex implements Lock {
     }
          */
 
+
+        //并覆写了tryAcquire方法。
         //我这样覆写
         protected boolean tryAcquire(int arg)
         { if(arg!=1)
