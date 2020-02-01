@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 //查看AQS的前驱和后继节点
 public class Test {
     private static Lock lock=new ReentrantLock();
-ReentrantReadWriteLock
     public static void main(String[] args) {
         for(int i=0;i<5;i++)
         {Thread thread=new Thread(()->

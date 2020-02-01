@@ -1,4 +1,8 @@
-package PACKAGE_NAME;
+public class ThreadTest
+{
 
-public class ThreadTest {
+    public static void main(String[] args) {
+      System.out.println(Math.round(11.5));
+      System.out.println(Math.round(-11.5));
+    }
 }
