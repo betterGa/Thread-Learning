@@ -1,3 +1,7 @@
+import org.junit.Test;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.lang.Thread;
 /*
@@ -49,24 +53,23 @@ public class Main
 
 
 //将进程设置为守护进程
-public class Main
-{
+public class Main {
 
 
     public static void main(String[] args) {
-        Thread thread=new Thread(new Runnable() {
+        Thread thread = new Thread(new Runnable() {
             @Override
             //是个无限循环
             public void run() {
-                for(;;)
-                {}
+                for (; ; ) {
+                }
             }
         });
         thread.setDaemon(true);
         thread.start();
         System.out.println("main thread is over");
     }
-}
+
 
 //如果将thread设置为守护线程，那么可以Main执行完JVM进程就终止了。
 /**
@@ -75,3 +78,35 @@ public class Main
  * 由于这里的守护线程执行的是一个死循环，
  * 可以说明JVM不等守护进程运行完毕就会结束JVM进程。
  */
+
+
+@Test
+public void test20200202()
+{
+    String start = "2000-01-01";
+    String end = "3000-12-31";
+    SimpleDateFormat myFormatter = new SimpleDateFormat("yyyy-MM-dd");
+               Date startDate;
+         long startDateL;
+         long endDateL;
+         long oneDay = 24*60*60*1000;
+     try  {
+             startDate = myFormatter.parse(start);
+             startDateL = startDate.getTime();
+             endDateL = myFormatter.parse(end).getTime();
+             while(startDateL < endDateL){
+                 String s = myFormatter.format(startDate).replaceAll("-", "");
+                 String[] str={s.substring(0, 4),s.substring(4)};
+                 StringBuffer sb = new StringBuffer(str[1]);
+                 if(str[0].toString().equals(sb.reverse().toString())){
+                   System.out.println(myFormatter.format(startDate));
+                 }
+                 startDateL = startDateL + oneDay;
+                 startDate.setTime(startDateL);
+             }
+          } catch (ParseException e) {
+                         e.printStackTrace();
+                    }
+                }
+               }
+

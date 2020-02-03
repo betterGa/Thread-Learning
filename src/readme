@@ -38,3 +38,9 @@ LockSupport.park() 方法和LockSupport.unpark() 方法。
 synchronized 致使线程阻塞，线程会进入 BLOCKED 状态，
 而调用 LockSuport 方法阻塞线程会致使线程进入到 WAITING 状态。
 并且，LockSupport.unpark( thread ) 可以指定线程对象唤醒指定的线程。
+
+ 5.几乎所有需要异步或者并发执行任务的程序都可以使用线程池
+      开发中使用线程池的优点如下：
+  (1)降低资源消耗
+  (2)提高响应速度
+  (3)提高线程的可管理性

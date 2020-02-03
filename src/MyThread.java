@@ -904,6 +904,7 @@ public class MyThread
  */
 
 //JDK1.5提供的Lock锁🔒
+    /*
 public class MyThread implements Runnable
 {
     private int ticket=500;
@@ -939,5 +940,120 @@ public class MyThread implements Runnable
     t3.start();
     }
 }
+*/
+
+    //《Java并发编程之美》
+//第1章 并发编程线程基础
+//1.2 线程创建与运行
+//方法一 继承Thread类
+    /*
+public class MyThread
+{
+    public static class ThreadTest extends Thread
+    {
+        @Override
+        public void run()
+        {
+            System.out.println(Thread.currentThread()+"I am a child thread.");
+        }
+
+        public static void main(String[] args) {
+            //创建线程实例，NEW 尚未启动。
+            ThreadTest threadTest=new ThreadTest();
+            //调用start方法才启动了线程。
+            // 调用start方法并不是就立马开始执行了，
+            //只是线程进入就绪状态，拿到了除了CPU以外的其他资源
+            //等待获取CPU资源后才真正处于运行状态。
+            threadTest.start();
+        }
+    }
+}
+*/
+    //方法二：实现Runnable接口
+/*
+public class MyThread implements Runnable
+{public int i;
+    public void setI(int i) {
+        this.i = i;
+    }
+
+    @Override
+                public void run() {
+        System.out.println(i);
+        //System.out.println("this:"+this+"name"+Thread.currentThread().getName()+"I am a child thread.");}
+    }
+    public static void main(String[] args) {
+        MyThread myThread=new MyThread();
+        myThread.setI(666);
+        new Thread(myThread).start();
+//new Thread(myThread).start();
+    }
+    }
+*/
+
+    //继承Thread类的好处：获取当前线程用this就可以，不需要Thread.currentThread
+//区分一下this 和 currentThread
+    //这篇博客不错：
+    //https://blog.csdn.net/single_wolf_wolf/article/details/83242430
+    /*
+ class CountOperate extends Thread {
+    public CountOperate(){
+System.out.println("CountOperate-----begin");
+System.out.println("Thread.currentThread().getName() = " + Thread.currentThread().getName());
+System.out.println("Thread.currentThread().isAlive() = " + Thread.currentThread().isAlive());
+System.out.println("this.getName() = " + this.getName());
+System.out.println("this.isAlive() = " + this.isAlive());
+System.out.println("CountOperate-----end"); }
+    @Override
+    public void run(){
+        System.out.println("run-----begin");
+        System.out.println("Thread.currentThread().getName() = " + Thread.currentThread().getName());
+        System.out.println("Thread.currentThread().isAlive() = " + Thread.currentThread().isAlive());
+        System.out.println("this.getName() = " + this.getName());
+        System.out.println("this.isAlive() = " + this.isAlive());
+        System.out.println("run-----end");
+    }
+}
+public class MyThread {
+    public static void main(String[] args) {
+        CountOperate c = new CountOperate();
+        Thread t1 = new Thread(c);
+        System.out.println("main begin t1 isAlive = " + t1.isAlive());
+        t1.setName("A");
+        t1.start();
+        System.out.println("main end t1 isAlive = " + t1.isAlive());
+    }
+}
+*/
+    //实现Runnable接口和继承Thread类都有一个缺点：任务没有返回值。
+//还有一种方法：使用FutureTask 任务类
+    /*
+class MyTask implements Callable<String>
+{
+
+    @Override
+    public String call() throws Exception {
+        return "Hello";}
+}
+public class MyThread
+{
+    public static void main(String[] args) throws InterruptedException {
+
+        //创建异步任务
+        FutureTask<String> futureTask=new FutureTask<>(new MyTask());
+        //启动线程
+        new Thread(futureTask).start();
+        try
+        {
+            //等待任务执行完毕，并返回结果
+            String result=futureTask.get();
+            System.out.println(result);
+        }
+        catch (ExecutionException e)
+        {e.printStackTrace();}
+    }}
+*/
+
+
 
 
