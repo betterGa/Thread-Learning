@@ -1,9 +1,9 @@
 package ProducerConsumerModel;
 
 //wait()是Object类中的方法，将当前线程置入“预执行队列”中
-//并且在wait()方法所在的代码处停止执行，直到接到通知或被中断为止
+//并且在wait()方法所在的代码处停止执行，直到接到通知 notify 或被中断 interrupt为止
 //wait()方法只能在同步方法或同步块中调用。
-//如果调用wait()时，没有持有适当的锁，会抛出异常。
+//如果调用wait()的线程没有事先获得该对象的监视器锁，会抛出异常 IllegalMonitorStateExption    。
 //wait()方法执行后，当前线程释放锁，线程与其他线程竞争重新获取锁。
 
 public class Owait {
